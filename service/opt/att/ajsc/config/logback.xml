@@ -1,0 +1,153 @@
+<configuration scan="true" scanPeriod="3 seconds">
+    <!-- import eelf loggers -->
+   <!--  <include file="etc/logback-eelf.xml" /> -->
+
+    <!-- Step 1
+         Create the Local Loggers according to OPS size and placement
+         policy.
+    -->
+
+    <appender name="audit_log" class="ch.qos.logback.core.ConsoleAppender">
+	<layout class="ch.qos.logback.classic.PatternLayout">
+		<Pattern>%d{yyyy-MM-dd HH:mm:ss} - %-5level %logger{36} [%thread] %n%msg%n</Pattern>
+	</layout>
+    </appender>
+
+    <appender name="debug_log" class="ch.qos.logback.core.ConsoleAppender">
+    	 <layout class="com.att.api.framework.common.logback.layout.SecurityPatternLayout">
+	<!--layout class="ch.qos.logback.classic.PatternLayout"-->
+		<Pattern>%d{yyyy-MM-dd HH:mm:ss} - %-5level %logger{36} [%thread] %n%msg%n</Pattern>
+	</layout>
+    </appender>
+
+     <appender name="perf_log" class="ch.qos.logback.core.ConsoleAppender">
+	<layout class="ch.qos.logback.classic.PatternLayout">
+		<Pattern>%d{yyyy-MM-dd HH:mm:ss} - %-5level %logger{36} [%thread] %n%msg%n</Pattern>
+	</layout>
+    </appender>
+    <!-- Step 2
+         Use AsyncJmsAppender to push logging processing off to
+         a worker thread, and also to push both to a remote JMS Queue (chosen from above)
+    -->
+
+    <!-- TODO use AsyncJmsAppender -->
+
+    <appender name="asyncWMQAuditAppender" class="com.att.api.framework.common.logback.jmsappender.AsyncJmsAppender">
+        <param name="JndiConnPropFile" value="WMQJMSAPPENDERLOGGING" />
+        <param name="DestinationName" value="queue:///CSILOGQL.M2E.DASHBOARD02.NOT.D3A" />         
+        <layout class="ch.qos.logback.classic.PatternLayout">
+             <Pattern>%m</Pattern>
+        </layout>     
+    </appender> 
+
+    <appender name="asyncWMQPerfAppender" class="com.att.api.framework.common.logback.jmsappender.AsyncJmsAppender">
+        <param name="JndiConnPropFile" value="WMQJMSAPPENDERLOGGING" />
+        <param name="DestinationName" value="queue:///CSILOGQL.M2E.PERFORMANCE02.NOT.D3A" />         
+        <layout class="ch.qos.logback.classic.PatternLayout">
+             <Pattern>%m</Pattern>
+        </layout>
+    </appender> 
+
+    <appender name="async_audit_log" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="asyncWMQAuditAppender"/>
+    </appender>
+
+    <appender name="async_perf_log" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="asyncWMQPerfAppender"/>
+    </appender>
+
+    <appender name="async_debug_log" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="debug_log" />
+    </appender>
+
+    <!-- Step 3
+         Other Appenders to be used
+    -->
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+	 <layout class="com.att.api.framework.common.logback.layout.SecurityPatternLayout">
+		<Pattern>%d{yyyy-MM-dd HH:mm:ss} - %-5level %logger{36} [%thread] %n%msg%n</Pattern>
+	</layout>
+    </appender>
+
+  
+    <!-- Step 4
+         Commonly used Named Loggers
+    -->
+    
+    <logger name="performance.tracking" level="DEBUG" additivity="false">
+        <appender-ref ref="async_perf_log"/>
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <!-- audit logger should alway be at INFO level -->
+    <logger name="audit" level="DEBUG" additivity="false">
+        <appender-ref ref="async_audit_log"/>
+        <appender-ref ref="STDOUT" />
+    </logger>
+    
+
+    <logger name="debug" level="INFO" additivity="false">
+        <appender-ref ref="async_debug_log"/>
+    </logger>
+   
+    <logger name="interfaces" level="DEBUG" additivity="false">
+        <appender-ref ref="async_debug_log"/>
+    </logger>
+
+    <logger name="interfaces.ProvisioningPortal" level="DEBUG" additivity="false">
+        <appender-ref ref="debug_log"/>
+    </logger>
+    
+    <logger name="audit.ProvisioningPortal" level="INFO" additivity="false">
+        <appender-ref ref="async_audit_log"/>
+    </logger>
+    
+    <logger name="interfaces.Utils.Voltage.common.VoltUnvolt" level="DEBUG" additivity="false">
+        <appender-ref ref="async_debug_log"/>
+    </logger>
+
+    <logger name="UtilLib.VoltageAccess" level="DEBUG" additivity="false">
+        <appender-ref ref="async_debug_log"/>
+    </logger>
+
+    <logger name="interfaces.Utils.Voltage.encryptionproperty.EncryptionProperty" level="DEBUG" additivity="false">
+        <appender-ref ref="async_debug_log"/>
+    </logger>
+
+    <logger name="LoggerUtility" level="DEBUG" additivity="false">
+        <appender-ref ref="async_debug_log"/>
+    </logger>
+
+    <logger name="com.att.aft.dme2.internal.jetty" level="ERROR" additivity="false">
+        <appender-ref ref="async_debug_log"/>
+    </logger>
+
+     <logger name="FILE_MONITOR" level="DEBUG" additivity="false">
+        <appender-ref ref="async_debug_log"/>
+    </logger>
+
+    <logger name="interfaces.PartnerProfileClient" level="ERROR" additivity="false">
+        <appender-ref ref="async_debug_log"/>
+    </logger>
+
+    <logger name="LoggerUtility" level="DEBUG" additivity="false">
+        <appender-ref ref="async_debug_log"/>
+    </logger>
+
+    <logger name="org.springframework" level="ERROR" additivity="false">
+        <appender-ref ref="async_debug_log"/>
+    </logger>
+
+    <!-- Step 6
+         Don't forget a "Root" - actually, be careful... this has been duplicating
+         some messages... disabling
+    -->
+
+    <root level="DEBUG">
+        <appender-ref ref="debug_log" />
+        <!--appender-ref ref="audit_log" />
+		<appender-ref ref="perf_log" /-->
+    </root>
+
+</configuration>

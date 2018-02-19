@@ -1,0 +1,23 @@
+#This is an example comment
+csi-netbondcontroller/v*/virtualNetworkConnections/abc/vlans
+csi-netbondcontroller/v*/virtualNetworkConnections/{vncId}/vlans
+csi-netbondcontroller/v*/virtualNetworkConnections/{vncId}
+csi-netbondcontroller/v*/virtualNetworkConnections
+
+csi-netbondcontroller/v*/physicalNetworkConnections/abc/vlans
+csi-netbondcontroller/v*/physicalNetworkConnections/{vncId}/vlans
+csi-netbondcontroller/v*/physicalNetworkConnections/{vncId}
+csi-netbondcontroller/v*/physicalNetworkConnections
+    
+#
+#More comment examples
+#
+csi-bubblegum/v*/flavor/{vncId}/vlans
+csi-bubblegum/v*/flavor/xyz
+csi-bubblegum/v*/flavor/{vncId}
+csi-bubblegum/v*/flavor
+
+ctnAliasFraudCheck/v*/fraudLockAttributes
+ctnAliasFraudCheck/v*/fraudLockAttributes/{member_id}
+echo/v*/testRestlet
+helloworld/v*/service/hello

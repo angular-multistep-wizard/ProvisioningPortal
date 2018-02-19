@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.att.aodp.aodpportal</groupId>
+	<artifactId>ProvisioningPortal-service</artifactId>
+	<version>1.0</version>
+	<!--GENERATED FROM ajsc-nomodeled-restlet-archetype -->
+	<properties>
+		<swagger.directory>${basedir}/target/classes/META-INF/resources/swagger</swagger.directory>
+		<java.version>1.8</java.version>
+		<docker.registry>dockercentral.it.att.com:5100</docker.registry>
+		<assembly.id>distribution</assembly.id>
+		<build.number>local</build.number>
+		<kube.namespace>com-att-aodp</kube.namespace>
+		<name.space>com.att.aodp</name.space>     <!-- <name.space>${namespace}</name.space> -->
+		<grm.namespace>com.att.aodp</grm.namespace>
+		<archetypeVersion>200.0.49</archetypeVersion>
+		<serviceArtifactName>provisioningportal</serviceArtifactName>
+		<mq.version>8.0.0.6</mq.version>
+
+		<!-- Sonar -->
+		<sonar.att.view.type>release</sonar.att.view.type>
+		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+		<sonar.surefire.reportsPath>${basedir}/target/surefire-reports</sonar.surefire.reportsPath>
+		<sonar.failsafe.reportsPath>${basedir}/target/failsafe-reports</sonar.failsafe.reportsPath>
+		<jacoco.path>${basedir}/target/jacoco_report</jacoco.path>
+		<jacoco.itPath>${basedir}/target/jacoco_itReport</jacoco.itPath>
+		<sonar.jacoco.reportPath>${basedir}/target/jacoco-ut.exec</sonar.jacoco.reportPath>
+		<sonar.jacoco.itReportPath>${basedir}/target/jacoco-it.exec</sonar.jacoco.itReportPath>
+		<sonar.language>java</sonar.language>
+	</properties>
+	<profiles>
+		<profile>
+			<id>all-tests</id>
+			<properties>
+				<build.profile.id>all-tests</build.profile.id>
+				<!-- All tests are run. -->
+				<skip.integration.tests>false</skip.integration.tests>
+				<skip.unit.tests>false</skip.unit.tests>
+			</properties>
+		</profile>
+		<profile>
+			<id>dev</id>
+		</profile>
+		<profile>
+			<id>integration-test</id>
+			<properties>
+				<!-- Used to locate the profile specific configuration file. -->
+				<build.profile.id>integration-test</build.profile.id>
+				<!-- Only integration tests are run. -->
+				<skip.integration.tests>false</skip.integration.tests>
+				<skip.unit.tests>true</skip.unit.tests>
+			</properties>
+		</profile>
+	</profiles>
+	<dependencies>
+
+		<dependency>
+			<groupId>com.att.api.framework</groupId>
+			<artifactId>ajsc-nonmodeled-jersey-endpoint</artifactId>
+			<version>200.0.45</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.contivo</groupId>
+			<artifactId>com.contivo.runtime.pom</artifactId>
+			<version>5.6.11</version>
+			<type>pom</type>
+		</dependency>
+		<dependency>
+			<groupId>backport-util-concurrent</groupId>
+			<artifactId>backport-util-concurrent</artifactId>
+			<version>3.1</version>
+		</dependency>
+
+		<!-- below dependency for enabling filters -->
+
+		<!-- <dependency> <groupId>com.att.api.framework</groupId> <artifactId>ajsc-aaf-filter</artifactId> 
+			<version>200.0.55</version> </dependency> <dependency> <groupId>com.att.cadi</groupId> 
+			<artifactId>cadi-aaf</artifactId> <version>1.3.2.57</version> </dependency> 
+			<dependency> <groupId>com.att.cadi</groupId> <artifactId>cadi-client</artifactId> 
+			<version>1.3.2.57</version> <exclusions> <exclusion> <groupId>com.att.aft</groupId> 
+			<artifactId>dme2</artifactId> </exclusion> </exclusions> </dependency> <dependency> 
+			<groupId>com.att.cadi</groupId> <artifactId>cadi-core</artifactId> <version>1.3.2.57</version> 
+			</dependency> <dependency> <groupId>com.att.aft</groupId> <artifactId>dme2</artifactId> 
+			<version>2.8.13</version> </dependency> -->
+		<dependency>
+			<groupId>com.att.api.framework</groupId>
+			<artifactId>ajsc-pp-filter</artifactId>
+			<version>200.0.49</version>
+		</dependency>
+
+
+		<!-- <dependency> <groupId>com.att.api.framework</groupId> <artifactId>ajsc-ivp-filter</artifactId> 
+			<version>200.0.30</version> </dependency> -->
+
+		<!-- <dependency> <groupId>com.att.api.framework</groupId> <artifactId>ajsc-caet-filter</artifactId> 
+			<version>200.0.34</version> </dependency> -->
+
+		<!-- <dependency> <groupId>com.att.api.framework</groupId> <artifactId>ajsc-voltage-filter</artifactId> 
+			<version>200.0.32</version> </dependency> -->
+		<!-- End filter Section -->
+		<!-- use below dependency for enabling csi-dashboard-logging using logback 
+			jms appender -->
+		<dependency>
+			<groupId>com.att.api.framework</groupId>
+			<artifactId>common-logbackjmsappender</artifactId>
+			<version>2.0.15</version>
+		</dependency>
+		<dependency>
+			<groupId>com.att.api.framework</groupId>
+			<artifactId>common-loggingsecurityfilter</artifactId>
+			<version>2.0.7</version>
+		</dependency>
+		<!-- WMQ and Discovery jars -->
+		<dependency>
+			<groupId>com.att.aft.discovery</groupId>
+			<artifactId>discovery-ctx</artifactId>
+			<version>5.1.3-16</version>
+		</dependency>
+		<dependency>
+			<groupId>com.att.aft.discovery</groupId>
+			<artifactId>discovery-clt</artifactId>
+			<version>5.1.3-02</version>
+			<exclusions>
+				<exclusion>
+					<groupId>junit</groupId>
+					<artifactId>junit</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.att.mq.ibm.jms</groupId>
+			<artifactId>com.ibm.mq</artifactId>
+			<version>${mq.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.att.mq.ibm.mqi</groupId>
+			<artifactId>com.ibm.mq.commonservices</artifactId>
+			<version>${mq.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.att.mq.ibm.jms</groupId>
+			<artifactId>com.ibm.mq.headers</artifactId>
+			<version>${mq.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.att.mq.ibm.jms</groupId>
+			<artifactId>com.ibm.mq.jmqi</artifactId>
+			<version>${mq.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.att.mq.ibm.jms</groupId>
+			<artifactId>com.ibm.mqjms</artifactId>
+			<version>${mq.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.att.mq.ibm.jms</groupId>
+			<artifactId>jms</artifactId>
+			<version>${mq.version}</version>
+		</dependency>
+	</dependencies>
+	<build>
+
+		<resources>
+			<resource>
+				<directory>src/main/webapp/META-INF/resources</directory>
+				<targetPath>${basedir}/target/classes/META-INF/resources</targetPath>
+			</resource>
+			<resource>
+				<!--config and resource files -->
+				<directory>${basedir}/etc</directory>
+				<targetPath>${basedir}/target/etc</targetPath>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*</include>
+				</includes>
+			</resource>
+			<resource>
+				<!--config and resource files -->
+				<directory>${basedir}/src/main/resources</directory>
+				<targetPath>${basedir}/target/src/main/resources</targetPath>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*</include>
+				</includes>
+			</resource>
+
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/*</include>
+				</includes>
+				<filtering>true</filtering>
+			</resource>
+			<resource>
+				<directory>src/main/docker</directory>
+				<includes>
+					<include>**/*</include>
+				</includes>
+				<filtering>true</filtering>
+			</resource>
+			<!-- <resource> <directory>src/main/kubernetes</directory> <includes> 
+				<include>**/*</include> </includes> <filtering>true</filtering> </resource> -->
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.7.5.201505241946</version>
+				<executions>
+					<!-- Prepares the property pointing to the JaCoCo runtime agent which 
+						is passed as VM argument when Maven the Surefire plugin is executed. -->
+					<execution>
+						<id>pre-unit-test</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<!-- Sets the path to the file which contains the execution data. -->
+							<destFile>${sonar.jacoco.reportPath}</destFile>
+							<propertyName>surefireArgLine</propertyName>
+						</configuration>
+					</execution>
+					<!-- Ensures that the code coverage report for unit tests is created 
+						after unit tests have been run. -->
+					<execution>
+						<id>post-unit-test</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+							<!-- Sets the path to the file which contains the execution data. -->
+							<dataFile>${sonar.jacoco.reportPath}</dataFile>
+							<!-- Sets the output directory for the code coverage report. -->
+							<outputDirectory>${jacoco.path}</outputDirectory>
+						</configuration>
+					</execution>
+					<!-- Prepares the property pointing to the JaCoCo runtime agent which 
+						is passed as VM argument when Maven the Failsafe plugin is executed. -->
+					<execution>
+						<id>pre-integration-test</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<!-- Sets the path to the file which contains the execution data. -->
+							<destFile>${sonar.jacoco.itReportPath}</destFile>
+							<!-- Sets the name of the property containing the settings for JaCoCo 
+								runtime agent. -->
+							<propertyName>failsafeArgLine</propertyName>
+						</configuration>
+					</execution>
+					<!-- Ensures that the code coverage report for integration tests after 
+						integration tests have been run. -->
+					<execution>
+						<id>post-integration-test</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+							<!-- Sets the path to the file which contains the execution data. -->
+							<dataFile>${sonar.jacoco.itReportPath}/</dataFile>
+							<!-- Sets the output directory for the code coverage report. -->
+							<outputDirectory>${jacoco.itPath}</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Used for unit tests -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.15</version>
+				<configuration>
+					<!-- Sets the VM argument line used when unit tests are run. -->
+					<argLine>${surefireArgLine}</argLine>
+
+					<!-- Skips unit tests if the value of skip.unit.tests property is true -->
+					<skipTests>${skip.unit.tests}</skipTests>
+					<!-- Excludes integration tests when unit tests are run. -->
+					<excludes>
+						<exclude>**/IT*.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<!-- Used for integration tests -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.15</version>
+				<executions>
+					<!-- Ensures that both integration-test and verify goals of the Failsafe 
+						Maven plugin are executed. -->
+					<execution>
+						<id>integration-tests</id>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+						<configuration>
+							<!-- Sets the VM argument line used when integration tests are run. -->
+							<argLine>${failsafeArgLine}</argLine>
+
+							<!-- Skips integration tests if the value of skip.integration.tests 
+								property is true -->
+							<skipTests>${skip.integration.tests}</skipTests>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.github.kongchen</groupId>
+				<artifactId>swagger-maven-plugin</artifactId>
+				<version>3.1.3</version>
+				<configuration>
+					<apiSources>
+						<apiSource>
+							<locations>com.att.aodp.aodpportal.service</locations>
+							<basePath>/restservices/helloworld/v1</basePath>
+							<info>
+								<title>${project.artifactId} Service</title>
+								<version>${project.version}</version>
+							</info>
+							<swaggerDirectory>${swagger.directory}</swaggerDirectory>
+						</apiSource>
+					</apiSources>
+				</configuration>
+				<executions>
+					<execution>
+						<!-- <phase>compile</phase> -->
+						<phase>package</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!--<plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-resources-plugin</artifactId> 
+				<version>2.7</version> <executions> <execution> <id>copy-docker-file</id> 
+				<phase>package</phase> <goals> <goal>copy-resources</goal> </goals> <configuration> 
+				<outputDirectory>${dockerLocation}</outputDirectory> <overwrite>true</overwrite> 
+				<resources> <resource> <directory>${basedir}/src/main/docker</directory> 
+				<filtering>true</filtering> <includes> <include>**/*</include> </includes> 
+				</resource> </resources> </configuration> </execution> </executions> </plugin> -->
+
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>0.4.13</version>
+				<configuration>
+					<imageName>${docker.registry}/${name.space}/${serviceArtifactName}</imageName>
+					<dockerDirectory>target/classes</dockerDirectory>
+					<imageTags>
+						<imageTag>${project.version}</imageTag>
+						<imageTag>latest</imageTag>
+					</imageTags>
+					<forceTags>true</forceTags>
+					<resources>
+						<resource>
+							<targetPath>/</targetPath>
+							<directory>${project.build.directory}</directory>
+							<include>${project.build.finalName}.jar</include>
+						</resource>
+						<resource>
+							<targetPath>/</targetPath>
+							<directory>${project.build.directory}</directory>
+							<include>${project.build.finalName}-${assembly.id}.tar.gz</include>
+						</resource>
+						<resource>
+							<targetPath>/</targetPath>
+							<directory>${project.build.directory}</directory>
+							<include>run.source</include>
+						</resource>
+						<resource>
+							<targetPath>/</targetPath>
+							<directory>${project.build.directory}</directory>
+							<include>prometheus-java-agent.jar</include>
+						</resource>
+						<resource>
+							<targetPath>/</targetPath>
+							<directory>${project.build.directory}</directory>
+							<include>ilib.jar</include>
+						</resource>
+					</resources>
+					<serverId>docker-hub</serverId>
+					<registryUrl>https://${docker.registry}</registryUrl>
+				</configuration>
+				<!--<configuration> <imageName>${docker.registry}/${project.artifactId}</imageName> 
+					<dockerDirectory>${dockerLocation}</dockerDirectory> <serverId>docker-hub</serverId> 
+					<registryUrl>https://${docker.registry}</registryUrl> <imageTags> <imageTag>${project.version}</imageTag> 
+					<imageTag>latest</imageTag> </imageTags> <forceTags>true</forceTags> </configuration> -->
+			</plugin>
+			<plugin>
+				<!--this plugin is set to skip. It creates an executable jar. You can't 
+					add to the classpath of such jars. That won't work for this project because 
+					we need to point to configurations outside of the jar file -->
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>1.3.6.RELEASE</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+						<configuration>
+							<mainClass>${start-class}</mainClass>
+						</configuration>
+					</execution>
+				</executions>
+				<configuration>
+					<skip>true</skip>
+					<mainClass>${start-class}</mainClass>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>ant-test</id>
+						<phase>package</phase>
+						<configuration>
+							<tasks>
+								<fixcrlf srcdir="${basedir}" eol="unix" includes="**/*.sh, **/*.source" />
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<!--build the final artifact for docker deployment -->
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.0.0</version>
+				<configuration>
+					<descriptors>
+						<descriptor>src/assembly/distribution.xml</descriptor>
+					</descriptors>
+					<tarLongFileMode>posix</tarLongFileMode>
+				</configuration>
+				<executions>
+					<execution>
+						<id>${assembly.id}</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Add the maven dependency plugin to copy the monitoring agent to the 
+				target -->
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target</outputDirectory>
+							<encoding>UTF-8</encoding>
+							<artifactItems>
+								<artifactItem>
+									<groupId>com.att.api.framework</groupId>
+									<artifactId>prometheus-java-agent</artifactId>
+									<version>2.0.2</version>
+									<destFileName>prometheus-java-agent.jar</destFileName>
+								</artifactItem>
+								<artifactItem>
+									<groupId>com.att.dmf</groupId>
+									<artifactId>ilib</artifactId>
+									<version>1.2.4</version>
+									<destFileName>ilib.jar</destFileName>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>com.github.eirslett</groupId>
+				<artifactId>frontend-maven-plugin</artifactId>
+				<version>1.3</version>
+
+				<configuration>
+					<nodeVersion>v8.9.4</nodeVersion>
+					<npmVersion>5.6.0</npmVersion>
+					<workingDirectory>src/main/webapp</workingDirectory>
+				</configuration>
+
+				<executions>
+					<execution>
+						<id>install node and npm</id>
+						<goals>
+							<goal>install-node-and-npm</goal>
+						</goals>
+					</execution>
+
+					<execution>
+						<id>npm install</id>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+					</execution>
+
+					<execution>
+						<id>npm run build</id>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+
+						<configuration>
+							<arguments>run build</arguments>
+						</configuration>
+					</execution>
+
+				</executions>
+			</plugin>
+
+
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</build>
+</project>
+
