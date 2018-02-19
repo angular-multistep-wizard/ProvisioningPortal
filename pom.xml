@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.att.aodp.aodpportal</groupId>
+    <artifactId>ProvisioningPortal</artifactId>
+        <version>1.0</version>
+        <properties>
+        <service.name>ProvisioningPortal</service.name>
+    </properties>
+    <packaging>pom</packaging>
+    <name>ProvisioningPortal</name>
+    <modules>
+        <module>service</module>
+        <module>Testmodule</module>
+
+    </modules>
+    <build>
+        <defaultGoal>install</defaultGoal>
+        <plugins>
+            <plugin>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <distributionManagement>
+        <repository>
+            <id>nexus</id>
+            <name>csi-releases</name>
+            <url>http://mavencentral.it.att.com:8084/nexus/content/repositories/csi-releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus</id>
+            <name>csi-snapshots</name>
+            <url>http://mavencentral.it.att.com:8084/nexus/content/repositories/csi-snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+</project>

@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.att.aodp.aodpportal</groupId>
+	<artifactId>ProvisioningPortal-testmodule</artifactId>
+	<version>1.0</version>
+
+	<!-- <parent>
+		<groupId>com.att.ajsc</groupId>
+		<artifactId>sdk-java-starter-parent</artifactId>
+		<version>6.1.0.6-SNAPSHOT</version>
+	</parent>
+ -->
+	<properties>
+		<swagger.directory>${basedir}/target/classes/META-INF/resources/swagger</swagger.directory>
+		<icd.file>service.json</icd.file>
+		<icd.package>com.att.aodp.aodpportal.Testmodule.service.rs</icd.package>
+		<java.version>1.8</java.version>
+		<docker.registry>zlp11313.vci.att.com:5100</docker.registry>
+		<build.number>local</build.number>
+		<kube.namespace>com-att-aodp</kube.namespace>
+		<service.account>ajsc-svc-account</service.account>
+		<namespace>com.att.aodp</namespace>	
+		<sdk.java.camel.rest>6.2.0.7</sdk.java.camel.rest>
+		<springframework.version>4.3.4.RELEASE</springframework.version>
+		<project.scm.id>git-server</project.scm.id>
+		<camel.version>2.18.0</camel.version>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.att.ajsc</groupId>
+				<artifactId>sdk-java-starter-parent</artifactId>
+				<version>6.1.0.6</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	
+	<dependencies>
+		<dependency>
+			<groupId>au.com.dius</groupId>
+			<artifactId>pact-jvm-consumer-junit_2.11</artifactId>
+			<version>3.3.9</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.codehaus.groovy</groupId>
+					<artifactId>groovy-all</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>au.com.dius</groupId>
+			<artifactId>pact-jvm-provider-junit_2.11</artifactId>
+			<version>3.3.9</version>
+		</dependency>	    
+		<dependency>
+			<groupId>com.att.ajsc</groupId>
+			<artifactId>sdk-java-camel-rest</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-annotations</artifactId>
+		</dependency>
+	
+		<!-- velocity -->
+		<dependency>
+             <groupId>org.apache.camel</groupId>
+             <artifactId>camel-velocity</artifactId>
+        </dependency>
+        <!-- end of velocity  -->
+        
+        
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+	
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<!-- added dme2 start -->
+		<dependency>
+			<groupId>com.att.aft</groupId>
+			<artifactId>dme2</artifactId>
+			<version>2.8.8.1</version>
+		</dependency>
+		<!-- dme2 end -->
+		<!-- added jsypt for encryption -->
+		<dependency>
+			<groupId>org.jasypt</groupId>
+			<artifactId>jasypt</artifactId>
+			<version>1.9.0</version>
+		</dependency>
+
+		<!-- end of jsypt -->
+		
+		 <!-- csi-logging-dependencies goes here -->
+		 <!-- csi-logging-dependency-addon -->
+		 
+	</dependencies>
+
+	<build>
+		<finalName>Testmodule</finalName>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+						<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				 <plugin>
+					<groupId>org.codehaus.gmavenplus</groupId>
+					<artifactId>gmavenplus-plugin</artifactId>
+					<version>1.5</version>
+					<executions>
+						<execution>							
+							<goals>
+								<goal>execute</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<scripts>
+							<script>file:///${pom.basedir}/etc/config/pactconfig.groovy</script>
+						</scripts>
+						<source></source>
+					</configuration>
+				</plugin> 
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>com.github.kongchen</groupId>
+										<artifactId>swagger-maven-plugin</artifactId>
+										<versionRange>3.1.3</versionRange>
+										<goals>
+											<goal>generate</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>au.com.dius</groupId>
+				<artifactId>pact-jvm-provider-maven_2.11</artifactId>
+				<version>3.5.5</version>
+				<configuration>
+					<!--pactBrokerUrl,user name,password and project version required only for consumer -->
+					<pactBrokerUrl>${BROKER_URL}</pactBrokerUrl>
+					<pactBrokerUsername>${userName}</pactBrokerUsername>
+					<pactBrokerPassword>${passWord}</pactBrokerPassword>
+					<projectVersion>${PACT_VERSION}</projectVersion>
+					<!-- service provider required only for producer -->
+					<serviceProviders>
+						<serviceProvider>
+							<name>ProvisioningPortal</name>
+							<protocol>http</protocol>
+							<host>${APP_URL}</host>
+							<port>${APP_PORT}</port>
+							<path>/</path>							
+							<pactBroker>
+							    <url>${BROKER_URL}</url>
+								<authentication>
+									<username>${userName}</username>
+									<password>${passWord}</password>
+								</authentication>
+							</pactBroker>
+							<!-- If you want to test specific PACT and specific port uncomment 
+								the consumers section and comment the pact broker in the service provider -->
+							<!-- <consumers> <consumer> <name>ajscpactconsumer</name> <pactUrl>${brokerUrl}/pacts/provider/ajscpactdemo/consumer/ajscpactdemo/latest</pactUrl> 
+								<pactUrl>${brokerUrl}/pacts/provider/ajscpactdemo/consumer/ajscpactconsumer2/version/0.0.1</pactUrl> 
+								</consumer> </consumers> -->
+						</serviceProvider>
+					</serviceProviders>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.github.kongchen</groupId>
+				<artifactId>swagger-maven-plugin</artifactId>
+				<version>3.1.3</version>
+				<configuration>
+					<apiSources>
+						<apiSource>
+							<locations>com.att.tta.Testmodule.service.rs</locations>
+							<basePath>/web</basePath>
+							<info>
+								<title>${project.artifactId} Service</title>
+								<version>${project.version}</version>
+							</info>
+							<swaggerDirectory>${swagger.directory}</swaggerDirectory>
+						</apiSource>
+					</apiSources>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>compile</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>0.4.11</version>
+				<configuration>
+					<imageName>${docker.registry}/com.att.tta/Testmodule</imageName>
+					<dockerDirectory>src/main/docker</dockerDirectory>
+					<serverId>docker-hub</serverId>
+					<registryUrl>https://${docker.registry}</registryUrl>
+					<imageTags>
+						<imageTag>${project.version}</imageTag>
+						<imageTag>latest</imageTag>
+					</imageTags>
+					<forceTags>true</forceTags>
+					<resources>
+						<resource>
+							<targetPath>/</targetPath>
+							<directory>${project.build.directory}</directory>
+							<include>${project.build.finalName}.jar</include>
+						</resource>
+						<resource>
+							<targetPath>/</targetPath>
+							<directory>${project.build.directory}</directory>
+							<include>etc/config/*</include>
+						</resource>
+						<!-- csi-logging-resources-goes here -->
+						<!-- csi-logging-resources-addon -->
+					</resources>
+				</configuration>
+			</plugin>
+			<!-- this plug in is set to true to skip unit test -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.19.1</version>
+			</plugin>
+<!-- 				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<executions>
+						<execution>
+							<goals>
+								<goal>repackage</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin> -->
+		     <plugin>
+		       <groupId>org.apache.maven.plugins</groupId>
+		       <artifactId>maven-install-plugin</artifactId>
+		       <executions>
+		         <execution>
+		           <id>default-install</id>
+		           <phase>none</phase>
+		         </execution>
+		       </executions>
+		     </plugin>
+		     <plugin>
+		       <groupId>org.apache.maven.plugins</groupId>
+		       <artifactId>maven-jar-plugin</artifactId>
+		       <executions>
+		         <execution>
+		           <id>default-jar</id>
+		           <phase>none</phase>
+		         </execution>
+		       </executions>
+		     </plugin>				
+		</plugins>
+		<!-- mention the logback.xml location through system property or environment 
+			variable to edit logback.xml at run time -->
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>${basedir}/etc/config</directory>
+				<targetPath>${basedir}/target/etc/config</targetPath>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*</include>
+				</includes>
+			</resource>
+			<!-- csi-logging-target-resources-goes here -->
+			<!-- csi-logging-target-resources-addon -->
+		</resources>
+	</build>
+	
+</project>
+

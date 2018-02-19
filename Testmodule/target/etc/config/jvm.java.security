@@ -1,0 +1,4 @@
+grant {
+               
+		permission javax.management.MBeanTrustPermission "register";
+	};
